@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from "react";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   return (
     <View style={styles.container}>
-      <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
+      <Image source={require("@/assets/images/icon.png")} style={styles.logo} />
       <Text style={styles.title}>AstroLogin</Text>
       <TextInput
         style={styles.input}
@@ -36,9 +43,9 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#0B0C10",
+    alignItems: "center",
+    justifyContent: "center",
     padding: 20,
   },
   logo: {
@@ -48,28 +55,28 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    color: '#66FCF1',
+    color: "#66FCF1",
     marginBottom: 40,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   input: {
-    width: '100%',
-    backgroundColor: '#1F2833',
-    color: '#C5C6C7',
+    width: "100%",
+    backgroundColor: "#1F2833",
+    color: "#C5C6C7",
     padding: 15,
     marginBottom: 20,
     borderRadius: 5,
   },
   button: {
-    width: '100%',
-    backgroundColor: '#45A29E',
+    width: "100%",
+    backgroundColor: "#45A29E",
     padding: 15,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+    color: "#FFFFFF",
+    fontWeight: "bold",
   },
 });
 
