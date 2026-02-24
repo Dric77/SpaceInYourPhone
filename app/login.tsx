@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -36,6 +37,11 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+      <Link href="/register" asChild>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Create Account</Text>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 };
@@ -62,7 +68,7 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     backgroundColor: "#1F2833",
-    color: "#C5C6C7",
+    color: "white",
     padding: 15,
     marginBottom: 20,
     borderRadius: 5,
