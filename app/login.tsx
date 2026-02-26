@@ -1,7 +1,7 @@
 import { AppKeyboardAvoidingView } from "@/components/app-keyboard-avoiding-view";
 import { Link } from "expo-router";
 import React, { useState } from "react";
-import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -10,12 +10,12 @@ const LoginScreen = () => {
   return (
     <AppKeyboardAvoidingView contentContainerClassName="px-5">
       <View className="items-center">
-        <Image
+        {/* <Image
           source={require("@/assets/images/icon.png")}
           className="w-24 h-24 mb-5"
-        />
+        /> */}
         <Text className="text-4xl text-astros-white mb-10 font-bold text-center">
-          SpaceInYourPhone
+          Space In Your Phone
         </Text>
         <View className="w-full">
           <TextInput
