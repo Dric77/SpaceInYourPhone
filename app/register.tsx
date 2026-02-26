@@ -1,3 +1,4 @@
+import { AppKeyboardAvoidingView } from "@/components/app-keyboard-avoiding-view";
 import apiClient from "@/utils/apiClient";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
@@ -5,15 +6,12 @@ import { Link } from "expo-router";
 import React, { useState } from "react";
 import {
     Alert,
-    KeyboardAvoidingView,
     Platform,
-    ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
     View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
@@ -65,111 +63,103 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          className="bg-black px-5"
+    <AppKeyboardAvoidingView contentContainerClassName="px-6">
+      <View className="items-center justify-center py-12">
+        <Text className="text-4xl text-astros-white mb-8 font-bold text-center">
+          Join the Space
+        </Text>
+        <TextInput
+          className="w-full bg-astros-card text-astros-white p-4 mb-4 rounded-xl"
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          placeholderTextColor="#94A3B8"
+        />
+        <TouchableOpacity
+          onPress={() => setShowDatePicker(true)}
+          className="w-full bg-astros-card p-4 mb-4 rounded-xl border border-astros-accent/30"
         >
-          <View className="flex-1 items-center justify-center py-10">
-            <Text className="text-3xl text-[#66FCF1] mb-10 font-bold">
-              Create Account
+          <Text className="text-astros-muted">
+            Birth Date: {dateOfBirth.toLocaleDateString()}
+          </Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={dateOfBirth}
+            mode="date"
+            display="default"
+            onChange={onChangeDate}
+          />
+        )}
+        <TextInput
+          className="w-full bg-astros-card text-astros-white p-4 mb-4 rounded-xl"
+          placeholder="First Name"
+          value={firstName}
+          onChangeText={setFirstName}
+          placeholderTextColor="#94A3B8"
+        />
+        <TextInput
+          className="w-full bg-astros-card text-astros-white p-4 mb-4 rounded-xl"
+          placeholder="Last Name"
+          value={lastName}
+          onChangeText={setLastName}
+          placeholderTextColor="#94A3B8"
+        />
+        <View className="w-full bg-astros-card mb-4 rounded-xl border border-astros-accent/30 overflow-hidden">
+          <Picker
+            selectedValue={gender}
+            onValueChange={(itemValue) => setGender(itemValue)}
+            style={{ color: "#F8FAFC", height: 55 }}
+            dropdownIconColor="#94A3B8"
+          >
+            <Picker.Item label="Male" value="0" />
+            <Picker.Item label="Female" value="1" />
+            <Picker.Item label="Other" value="2" />
+          </Picker>
+        </View>
+        <TextInput
+          className="w-full bg-astros-card text-astros-white p-4 mb-4 rounded-xl"
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          placeholderTextColor="#94A3B8"
+        />
+        <View className="flex-row gap-4 mb-6">
+          <TextInput
+            className="flex-1 bg-astros-card text-astros-white p-4 rounded-xl"
+            placeholder="Longitude"
+            value={birthPlaceLongitude}
+            onChangeText={setBirthPlaceLongitude}
+            keyboardType="numeric"
+            placeholderTextColor="#94A3B8"
+          />
+          <TextInput
+            className="flex-1 bg-astros-card text-astros-white p-4 rounded-xl"
+            placeholder="Latitude"
+            value={birthPlaceLatitude}
+            onChangeText={setBirthPlaceLatitude}
+            keyboardType="numeric"
+            placeholderTextColor="#94A3B8"
+          />
+        </View>
+        <TouchableOpacity
+          onPress={handleRegister}
+          className="w-full bg-astros-accent p-4 rounded-xl items-center mb-6"
+        >
+          <Text className="text-astros-white font-bold text-lg">Register</Text>
+        </TouchableOpacity>
+        <Link href="/login" asChild>
+          <TouchableOpacity className="mt-2">
+            <Text className="text-astros-accent font-medium text-center">
+              Already have an account? Log in
             </Text>
-            <TextInput
-              className="w-full bg-[#1F2833] text-white p-4 mb-3 rounded"
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              placeholderTextColor="#C5C6C7"
-            />
-            <TouchableOpacity
-              onPress={() => setShowDatePicker(true)}
-              className="w-full bg-[#1F2833] p-4 mb-3 rounded border border-gray-700"
-            >
-              <Text className="text-[#ebebeb]">
-                Birth Date: {dateOfBirth.toLocaleDateString()}
-              </Text>
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={dateOfBirth}
-                mode="date"
-                display="default"
-                onChange={onChangeDate}
-              />
-            )}
-            <TextInput
-              className="w-full bg-[#1F2833] text-white p-4 mb-3 rounded"
-              placeholder="First Name"
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholderTextColor="#C5C6C7"
-            />
-            <TextInput
-              className="w-full bg-[#1F2833] text-white p-4 mb-3 rounded"
-              placeholder="Last Name"
-              value={lastName}
-              onChangeText={setLastName}
-              placeholderTextColor="#C5C6C7"
-            />
-            <View className="w-full bg-[#1F2833] mb-3 rounded border border-gray-700 overflow-hidden">
-              <Picker
-                selectedValue={gender}
-                onValueChange={(itemValue) => setGender(itemValue)}
-                style={{ color: "#ebebeb", height: 55 }}
-                dropdownIconColor="#ebebeb"
-              >
-                <Picker.Item label="Male" value="0" />
-                <Picker.Item label="Female" value="1" />
-                <Picker.Item label="Other" value="2" />
-              </Picker>
-            </View>
-            <TextInput
-              className="w-full bg-[#1F2833] text-white p-4 mb-3 rounded"
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              placeholderTextColor="#C5C6C7"
-            />
-            <TextInput
-              className="w-full bg-[#1F2833] text-white p-4 mb-3 rounded"
-              placeholder="Birth Place Longitude"
-              value={birthPlaceLongitude}
-              onChangeText={setBirthPlaceLongitude}
-              keyboardType="numeric"
-              placeholderTextColor="#C5C6C7"
-            />
-            <TextInput
-              className="w-full bg-[#1F2833] text-white p-4 mb-5 rounded"
-              placeholder="Birth Place Latitude"
-              value={birthPlaceLatitude}
-              onChangeText={setBirthPlaceLatitude}
-              keyboardType="numeric"
-              placeholderTextColor="#C5C6C7"
-            />
-            <TouchableOpacity
-              onPress={handleRegister}
-              className="w-full bg-[#45A29E] p-4 rounded items-center mb-4"
-            >
-              <Text className="text-white font-bold">Register</Text>
-            </TouchableOpacity>
-            <Link href="/login" asChild>
-              <TouchableOpacity className="mt-3">
-                <Text className="text-[#007BFF]">
-                  Already have an account? Log in
-                </Text>
-              </TouchableOpacity>
-            </Link>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </TouchableOpacity>
+        </Link>
+      </View>
+    </AppKeyboardAvoidingView>
   );
 }
