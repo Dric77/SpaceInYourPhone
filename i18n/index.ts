@@ -3,6 +3,11 @@ import { initReactI18next } from "react-i18next";
 import en from "./en.json";
 import ka from "./ka.json";
 
+export const supportedLanguages = [
+  //   { code: "en", name: "English", label: "EN" },
+  { code: "ka", name: "Georgian", label: "KA" },
+];
+
 const resources = {
   en: {
     translation: en,
@@ -14,8 +19,8 @@ const resources = {
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: "en", // Set a default language
-  fallbackLng: "en",
+  lng: "ka", // Set a default language
+  fallbackLng: "ka",
   interpolation: {
     escapeValue: false, // react already safes from xss
   },

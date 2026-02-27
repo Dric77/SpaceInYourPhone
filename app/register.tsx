@@ -2,6 +2,7 @@ import { AppButton } from "@/components/app-button";
 import { AppForm } from "@/components/app-form";
 import { AppKeyboardAvoidingView } from "@/components/app-keyboard-avoiding-view";
 import { AppTextInput } from "@/components/app-text-input";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { useAuth } from "@/hooks/Auth/use-auth";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
@@ -59,7 +60,9 @@ export default function RegisterScreen() {
   return (
     <AppKeyboardAvoidingView contentContainerClassName="px-6">
       <View className="items-center justify-center py-12">
-        <Text className="text-4xl text-astros-white mb-8 font-bold text-center">
+        <LanguageSwitcher className="absolute right-0 top-0" />
+
+        <Text className="text-4xl text-astros-white mb-8 mt-4 font-bold text-center">
           {t("auth.joinTheSpace")}
         </Text>
 
