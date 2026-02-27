@@ -1,58 +1,50 @@
+import { AppButton } from "@/components/app-button";
 import { AppKeyboardAvoidingView } from "@/components/app-keyboard-avoiding-view";
-import apiClient from "@/utils/apiClient";
+import { AppTextInput } from "@/components/app-text-input";
+import { useAuth } from "@/hooks/Auth/use-auth";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { Formik } from "formik";
 import React, { useState } from "react";
-import {
-    Alert,
-    Platform,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
+import * as Yup from "yup";
+
+const RegisterSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  gender: Yup.string().required("Gender is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  birthPlaceLongitude: Yup.string().required("Longitude is required"),
+  birthPlaceLatitude: Yup.string().required("Latitude is required"),
+});
 
 export default function RegisterScreen() {
-  const [email, setEmail] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [gender, setGender] = useState("0");
-  const [password, setPassword] = useState("");
-  const [birthPlaceLongitude, setBirthPlaceLongitude] = useState("");
-  const [birthPlaceLatitude, setBirthPlaceLatitude] = useState("");
+  const router = useRouter();
+  const { register, loading } = useAuth();
 
-  const handleRegister = async () => {
-    try {
-      const response = await apiClient.post(
-        "/api/users/Authentication/Register",
-        {
-          email,
-          dateOfBirth: dateOfBirth.toISOString(),
-          firstName,
-          lastName,
-          gender: parseInt(gender, 10),
-          password,
-          birthPlaceLongitude,
-          birthPlaceLatitude,
-        },
-      );
+  const handleRegister = async (values: any) => {
+    const registrationData = {
+      ...values,
+      dateOfBirth: dateOfBirth.toISOString(),
+      gender: parseInt(values.gender, 10),
+    };
 
-      if (response.status === 200 || response.status === 201) {
-        Alert.alert("Registration Successful", "You can now log in.");
-      } else {
-        const errorData = response.data;
-        console.error("Registration failed:", errorData);
-        Alert.alert(
-          "Registration Failed",
-          errorData.message || "Something went wrong.",
-        );
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Registration Error", "An unexpected error occurred.");
+    const result = await register(registrationData);
+
+    if (result.success) {
+      Alert.alert("Registration Successful", "You can now log in.", [
+        { text: "OK", onPress: () => router.replace("/login") },
+      ]);
+    } else {
+      Alert.alert("Registration Failed", result.error);
     }
   };
 
@@ -68,97 +60,142 @@ export default function RegisterScreen() {
         <Text className="text-4xl text-astros-white mb-8 font-bold text-center">
           Join the Space
         </Text>
-        <TextInput
-          className="w-full bg-astros-card text-astros-white p-4 mb-4 rounded-xl"
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          placeholderTextColor="#94A3B8"
-        />
-        <TouchableOpacity
-          onPress={() => setShowDatePicker(true)}
-          className="w-full bg-astros-card p-4 mb-4 rounded-xl border border-astros-accent/30"
+
+        <Formik
+          initialValues={{
+            email: "",
+            firstName: "",
+            lastName: "",
+            gender: "0",
+            password: "",
+            birthPlaceLongitude: "",
+            birthPlaceLatitude: "",
+          }}
+          validationSchema={RegisterSchema}
+          onSubmit={handleRegister}
         >
-          <Text className="text-astros-muted">
-            Birth Date: {dateOfBirth.toLocaleDateString()}
-          </Text>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={dateOfBirth}
-            mode="date"
-            display="default"
-            onChange={onChangeDate}
-          />
-        )}
-        <TextInput
-          className="w-full bg-astros-card text-astros-white p-4 mb-4 rounded-xl"
-          placeholder="First Name"
-          value={firstName}
-          onChangeText={setFirstName}
-          placeholderTextColor="#94A3B8"
-        />
-        <TextInput
-          className="w-full bg-astros-card text-astros-white p-4 mb-4 rounded-xl"
-          placeholder="Last Name"
-          value={lastName}
-          onChangeText={setLastName}
-          placeholderTextColor="#94A3B8"
-        />
-        <View className="w-full bg-astros-card mb-4 rounded-xl border border-astros-accent/30 overflow-hidden">
-          <Picker
-            selectedValue={gender}
-            onValueChange={(itemValue) => setGender(itemValue)}
-            style={{ color: "#F8FAFC", height: 55 }}
-            dropdownIconColor="#94A3B8"
-          >
-            <Picker.Item label="Male" value="0" />
-            <Picker.Item label="Female" value="1" />
-            <Picker.Item label="Other" value="2" />
-          </Picker>
-        </View>
-        <TextInput
-          className="w-full bg-astros-card text-astros-white p-4 mb-4 rounded-xl"
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          placeholderTextColor="#94A3B8"
-        />
-        <View className="flex-row gap-4 mb-6">
-          <TextInput
-            className="flex-1 bg-astros-card text-astros-white p-4 rounded-xl"
-            placeholder="Longitude"
-            value={birthPlaceLongitude}
-            onChangeText={setBirthPlaceLongitude}
-            keyboardType="numeric"
-            placeholderTextColor="#94A3B8"
-          />
-          <TextInput
-            className="flex-1 bg-astros-card text-astros-white p-4 rounded-xl"
-            placeholder="Latitude"
-            value={birthPlaceLatitude}
-            onChangeText={setBirthPlaceLatitude}
-            keyboardType="numeric"
-            placeholderTextColor="#94A3B8"
-          />
-        </View>
-        <TouchableOpacity
-          onPress={handleRegister}
-          className="w-full bg-astros-accent p-4 rounded-xl items-center mb-6"
-        >
-          <Text className="text-astros-white font-bold text-lg">Register</Text>
-        </TouchableOpacity>
-        <Link href="/login" asChild>
-          <TouchableOpacity className="mt-2">
-            <Text className="text-astros-accent font-medium text-center">
-              Already have an account? Log in
-            </Text>
-          </TouchableOpacity>
-        </Link>
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            setFieldValue,
+            values,
+            errors,
+            touched,
+          }) => (
+            <View className="w-full">
+              <AppTextInput
+                placeholder="Email"
+                value={values.email}
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+                error={errors.email}
+                touched={touched.email}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+
+              <TouchableOpacity
+                onPress={() => setShowDatePicker(true)}
+                className="w-full bg-astros-card p-4 mb-4 rounded-xl border border-astros-accent/30"
+              >
+                <Text className="text-astros-muted">
+                  Birth Date: {dateOfBirth.toLocaleDateString()}
+                </Text>
+              </TouchableOpacity>
+              {showDatePicker && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={dateOfBirth}
+                  mode="date"
+                  display="default"
+                  onChange={onChangeDate}
+                />
+              )}
+
+              <AppTextInput
+                placeholder="First Name"
+                value={values.firstName}
+                onChangeText={handleChange("firstName")}
+                onBlur={handleBlur("firstName")}
+                error={errors.firstName}
+                touched={touched.firstName}
+              />
+
+              <AppTextInput
+                placeholder="Last Name"
+                value={values.lastName}
+                onChangeText={handleChange("lastName")}
+                onBlur={handleBlur("lastName")}
+                error={errors.lastName}
+                touched={touched.lastName}
+              />
+
+              <View className="w-full bg-astros-card mb-4 rounded-xl border border-astros-accent/30 overflow-hidden">
+                <Picker
+                  selectedValue={values.gender}
+                  onValueChange={(itemValue) =>
+                    setFieldValue("gender", itemValue)
+                  }
+                  style={{ color: "#F8FAFC", height: 55 }}
+                  dropdownIconColor="#94A3B8"
+                >
+                  <Picker.Item label="Male" value="0" />
+                  <Picker.Item label="Female" value="1" />
+                  <Picker.Item label="Other" value="2" />
+                </Picker>
+              </View>
+
+              <AppTextInput
+                placeholder="Password"
+                value={values.password}
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+                error={errors.password}
+                touched={touched.password}
+                secureTextEntry
+              />
+
+              <View className="flex-row gap-4 mb-2">
+                <AppTextInput
+                  containerClassName="flex-1"
+                  placeholder="Longitude"
+                  value={values.birthPlaceLongitude}
+                  onChangeText={handleChange("birthPlaceLongitude")}
+                  onBlur={handleBlur("birthPlaceLongitude")}
+                  error={errors.birthPlaceLongitude}
+                  touched={touched.birthPlaceLongitude}
+                  keyboardType="numeric"
+                />
+                <AppTextInput
+                  containerClassName="flex-1"
+                  placeholder="Latitude"
+                  value={values.birthPlaceLatitude}
+                  onChangeText={handleChange("birthPlaceLatitude")}
+                  onBlur={handleBlur("birthPlaceLatitude")}
+                  error={errors.birthPlaceLatitude}
+                  touched={touched.birthPlaceLatitude}
+                  keyboardType="numeric"
+                />
+              </View>
+
+              <AppButton
+                title="Register"
+                loading={loading}
+                onPress={() => handleSubmit()}
+                className="mb-6"
+              />
+
+              <Link href="/login" asChild>
+                <TouchableOpacity className="mt-2">
+                  <Text className="text-astros-accent font-medium text-center">
+                    Already have an account? Log in
+                  </Text>
+                </TouchableOpacity>
+              </Link>
+            </View>
+          )}
+        </Formik>
       </View>
     </AppKeyboardAvoidingView>
   );

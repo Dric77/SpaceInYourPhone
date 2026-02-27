@@ -1,11 +1,34 @@
+import { AppButton } from "@/components/app-button";
 import { AppKeyboardAvoidingView } from "@/components/app-keyboard-avoiding-view";
-import { Link } from "expo-router";
-import React, { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
+import { useAuth } from "@/hooks/Auth/use-auth";
+import { Link, useRouter } from "expo-router";
+import { Formik } from "formik";
+import React from "react";
+import { Alert, Text, View } from "react-native";
+import * as Yup from "yup";
+
+const LoginSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+});
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const { login, loading } = useAuth();
+
+  const handleLogin = async (values: any) => {
+    const result = await login(values);
+    if (result.success) {
+      router.replace("/(tabs)");
+    } else {
+      Alert.alert("Login Failed", result.error);
+    }
+  };
 
   return (
     <AppKeyboardAvoidingView contentContainerClassName="px-5">
@@ -17,35 +40,57 @@ const LoginScreen = () => {
         <Text className="text-4xl text-astros-white mb-10 font-bold text-center">
           Space In Your Phone
         </Text>
-        <View className="w-full">
-          <TextInput
-            className="w-full bg-astros-card text-astros-white p-4 mb-5 rounded-xl"
-            placeholder="Email"
-            placeholderTextColor="#94A3B8"
-            onChangeText={setEmail}
-            value={email}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TextInput
-            className="w-full bg-astros-card text-astros-white p-4 mb-5 rounded-xl"
-            placeholder="Password"
-            placeholderTextColor="#94A3B8"
-            onChangeText={setPassword}
-            value={password}
-            secureTextEntry
-          />
-          <TouchableOpacity className="w-full bg-astros-accent p-4 rounded-xl items-center mb-4">
-            <Text className="text-astros-white font-bold">Log In</Text>
-          </TouchableOpacity>
-          <Link href="/register" asChild>
-            <TouchableOpacity className="w-full border border-astros-accent p-4 rounded-xl items-center">
-              <Text className="text-astros-accent font-bold">
-                Create Account
-              </Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
+
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={LoginSchema}
+          onSubmit={handleLogin}
+        >
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
+            <View className="w-full">
+              <AppTextInput
+                placeholder="Email"
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+                value={values.email}
+                error={errors.email}
+                touched={touched.email}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                containerClassName="mb-5"
+              />
+
+              <AppTextInput
+                placeholder="Password"
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+                value={values.password}
+                error={errors.password}
+                touched={touched.password}
+                secureTextEntry
+                containerClassName="mb-5"
+              />
+
+              <AppButton
+                title="Log In"
+                loading={loading}
+                onPress={() => handleSubmit()}
+                className="mb-4"
+              />
+
+              <Link href="/register" asChild>
+                <AppButton title="Create Account" variant="outline" />
+              </Link>
+            </View>
+          )}
+        </Formik>
       </View>
     </AppKeyboardAvoidingView>
   );
