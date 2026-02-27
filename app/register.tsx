@@ -34,7 +34,7 @@ export default function RegisterScreen() {
     const registrationData = {
       ...values,
       dateOfBirth: dateOfBirth.toISOString(),
-      gender: parseInt(values.gender, 10),
+      gender: Number.parseInt(values.gender, 10),
     };
 
     const result = await register(registrationData);
